@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # plugin.rb
 # name: discourse-memberstack
 # about: Validates Memberstack plans during authentication and customizes usernames
@@ -13,35 +15,36 @@ require 'json'
 
 after_initialize do
   module ::MemberstackAuth
-    class MemberstackAuthenticatorExtension
-      def self.register_middleware(authenticator)
-        authenticator.before_complete do |auth_result|
-          return auth_result unless SiteSetting.memberstack_auth_enabled
+    module OpenIDConnectAuthenticatorExtension
+      def after_authenticate(auth_result)
+        # Call the original `after_authenticate` method first
+        result = super(auth_result)
 
-          memberstack_id = auth_result.extra_data[:uid]
+        return result unless SiteSetting.memberstack_auth_enabled
 
-          unless has_active_plan?(memberstack_id)
-            auth_result.failed = true
-            auth_result.failed_reason = I18n.t("memberstack_auth.no_active_plan")
-            return auth_result
-          end
+        memberstack_id = auth_result.extra_data[:uid]
 
-          if auth_result.user.nil? && auth_result.email.present?
-            name = auth_result.extra_data[:name].presence
-            if name.present?
-              username = name.downcase.gsub(/[^a-z0-9]/, '')
-              username = UserNameSuggester.suggest(username)
-              auth_result.username = username
-            end
-          end
-
-          auth_result
+        unless has_active_plan?(memberstack_id)
+          result.failed = true
+          result.failed_reason = I18n.t("memberstack_auth.no_active_plan")
+          return result
         end
+
+        if result.user.nil? && result.email.present?
+          name = auth_result.extra_data[:name].presence
+          if name.present?
+            username = name.downcase.gsub(/[^a-z0-9]/, '')
+            username = UserNameSuggester.suggest(username)
+            result.username = username
+          end
+        end
+
+        result
       end
 
       private
 
-      def self.has_active_plan?(member_id)
+      def has_active_plan?(member_id)
         return false if member_id.blank?
 
         uri = URI("https://api.memberstack.io/v2/members/#{member_id}/plans")
@@ -65,11 +68,9 @@ after_initialize do
     end
   end
 
-  # Conditional check for OpenID Connect authenticator availability
+  # Prepend the mixin if OpenIDConnectAuthenticator is defined
   if defined?(OpenIDConnectAuthenticator)
-    OpenIDConnectAuthenticator.class_eval do
-      MemberstackAuth::MemberstackAuthenticatorExtension.register_middleware(self)
-    end
+    OpenIDConnectAuthenticator.prepend MemberstackAuth::OpenIDConnectAuthenticatorExtension
   else
     Rails.logger.warn("OpenID Connect authenticator is not available.")
   end
