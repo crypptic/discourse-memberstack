@@ -1,1 +1,6 @@
 en:
+  site_settings:
+    memberstack_auth_enabled: "Enable Memberstack plan validation"
+    memberstack_api_key: "Memberstack API Key"
+  memberstack_auth:
+    no_active_plan: "You must have an active plan to log in."

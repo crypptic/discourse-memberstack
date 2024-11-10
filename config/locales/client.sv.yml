@@ -1,0 +1,11 @@
+sv:
+  js:
+    discourse_memberstack:
+      placeholder: "Platshållartext"
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_memberstack: "Discourse Memberstack"
+        memberstack_auth_enabled: "Aktivera validering av Memberstack-plan"
+        memberstack_api_key: "Memberstack API-nyckel"

@@ -1,9 +1,11 @@
 en:
+  js:
+    discourse_memberstack:
+      placeholder: "Placeholder text"
   admin_js:
     admin:
       site_settings:
         categories:
-          TODO_plugin_name: "Plugin Name"
-  js:
-    discourse_plugin_name:
-      placeholder: placeholder
+          discourse_memberstack: "Discourse Memberstack"
+        memberstack_auth_enabled: "Enable Memberstack plan validation"
+        memberstack_api_key: "Memberstack API Key"

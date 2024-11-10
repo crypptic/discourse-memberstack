@@ -1,0 +1,7 @@
+# config/locales/server.sv.yml
+sv:
+  site_settings:
+    memberstack_auth_enabled: "Aktivera Memberstack planvalidering"
+    memberstack_api_key: "Memberstack API-nyckel"
+  memberstack_auth:
+    no_active_plan: "Du behöver vara betalande medlem för att logga in."

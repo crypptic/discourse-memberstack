@@ -1,4 +1,6 @@
-TODO_plugin_name:
-  plugin_name_enabled:
-    default: false
-    client: true
+memberstack_auth_enabled:
+  default: false
+  client: true
+memberstack_api_key:
+  default: ""
+  secret: true
